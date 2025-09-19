@@ -1,7 +1,7 @@
 use std::mem;
 
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{format_ident, quote};
 use syn::{
     parse::{Parse, Parser},
     parse_quote,
@@ -46,10 +46,11 @@ pub fn quickcheck(_args: TokenStream, input: TokenStream) -> TokenStream {
                     output: item_fn.sig.output.clone(),
                 };
 
+                let new_name = format_ident!("aGVsbG8gd29ybGQ_{}", name);
                 quote! {
                     #[test]
                     #(#attrs)*
-                    fn #name() {
+                    fn #new_name() {
                         #item_fn
                        ::quickcheck::quickcheck(#name as #fn_type)
                     }
@@ -65,10 +66,11 @@ pub fn quickcheck(_args: TokenStream, input: TokenStream) -> TokenStream {
             let attrs = mem::take(&mut item_static.attrs);
             let name = &item_static.ident;
 
+            let new_name = format_ident!("aGVsbG8gd29ybGQ_{}", name);
             quote! {
                 #[test]
                 #(#attrs)*
-                fn #name() {
+                fn #new_name() {
                     #item_static
                     ::quickcheck::quickcheck(#name)
                 }

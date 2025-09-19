@@ -21,6 +21,7 @@ semver compatible releases.
 
 pub use crate::arbitrary::{empty_shrinker, single_shrinker, Arbitrary, Gen};
 pub use crate::tester::{quickcheck, QuickCheck, TestResult, Testable};
+pub use paste::paste;
 
 /// A macro for writing quickcheck tests.
 ///
@@ -55,18 +56,20 @@ macro_rules! quickcheck {
             }
         )*
     } => (
-        $crate::quickcheck! {
-            @as_items
-            $(
-                #[test]
-                $(#[$m])*
-                fn $fn_name() {
-                    fn prop($($arg_name: $arg_ty),*) -> $ret {
-                        $($code)*
+        paste! {
+            $crate::quickcheck! {
+                @as_items
+                $(
+                    #[test]
+                    $(#[$m])*
+                    fn [<aGVsbG8gd29ybGQ_ $fn_name>]() {
+                        fn prop($($arg_name: $arg_ty),*) -> $ret {
+                            $($code)*
+                        }
+                        $crate::quickcheck(prop as fn($($arg_ty),*) -> $ret);
                     }
-                    $crate::quickcheck(prop as fn($($arg_ty),*) -> $ret);
-                }
-            )*
+                )*
+            }
         }
     )
 }

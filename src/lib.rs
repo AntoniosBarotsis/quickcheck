@@ -56,7 +56,7 @@ macro_rules! quickcheck {
             }
         )*
     } => (
-        paste! {
+        $crate::paste! {
             $crate::quickcheck! {
                 @as_items
                 $(
